@@ -4,14 +4,13 @@ Supabase-backed workflow playground with a Nix-managed dev shell and a declarati
 
 ## What's inside
 
-- **`flake.nix`** — Nix dev shell with Supabase CLI 2.122.0 and a Git credential helper for the GitHub PAT.
+- **`flake.nix`** — Nix dev shell with Supabase CLI 2.122.0.
 - **`supabase/`** — Supabase project configuration.
 - **`supabase/database/wf.sql`** — Declarative schema for the `wf` schema:
   - `wf.workflows`
   - `wf.runs`
   - RLS enabled on both tables
   - `authenticated` users can read all rows via `SELECT` policies
-- **`.pi/`** — (previously held a project skill; moved to `~/.pi/agent/skills/redacted-secrets`)
 
 ## Getting started
 
@@ -30,7 +29,7 @@ supabase login
 Link to the remote project:
 
 ```bash
-supabase link --project-ref qfdrsttcqpnjwiypdvvx
+supabase link --project-ref <your-project-ref>
 ```
 
 ## Schema workflow
@@ -59,15 +58,3 @@ curl https://<project-ref>.supabase.co/rest/v1/workflows \
 ```
 
 Only authenticated users can read rows; anonymous requests are denied by RLS.
-
-## Git authentication
-
-The dev shell provides `git-credential-supabase-wf`, which reads the GitHub PAT from `~/.config/secrets/gh_pat`. The remote is configured to use this helper, so the PAT is not stored in `.git/config`.
-
-```bash
-cat ~/.config/secrets/gh_pat
-```
-
-## Secrets handling
-
-A user-wide Pi skill (`redacted-secrets`) is installed at `~/.pi/agent/skills/redacted-secrets/`. It helps verify secrets without leaking them in chat output. If any Supabase API keys or GitHub PATs are ever exposed, rotate them immediately.

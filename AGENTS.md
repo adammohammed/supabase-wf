@@ -11,11 +11,9 @@ This is a Supabase-backed workflow playground. It uses:
 
 ## Critical conventions
 
-1. **Always run commands inside `nix develop`.** The dev shell provides the patched Supabase CLI 2.122.0 and the Git credential helper.
+1. **Always run commands inside `nix develop`.** The dev shell provides the patched Supabase CLI 2.122.0.
 2. **Do not put app tables in the `public` schema.** Use the `wf` schema.
 3. **Enable RLS on every table.** Add explicit policies; do not rely on default grants.
-4. **Do not expose secrets in chat output.** API keys, bearer tokens, JWTs, passwords, connection strings, and PATs must be redacted with `<REDACTED>` or safe prefixes. If a secret is accidentally exposed, tell the user to rotate it.
-5. **The GitHub PAT lives at `~/.config/secrets/gh_pat`.** Do not copy it to other files. The git remote uses `git-credential-supabase-wf` to read it at runtime.
 
 ## Common commands
 
@@ -25,7 +23,7 @@ nix develop
 
 # Verify login and link
 supabase projects list
-supabase link --project-ref qfdrsttcqpnjwiypdvvx
+supabase link --project-ref <your-project-ref>
 
 # Apply schema directly (Docker-free workaround)
 supabase db query --linked -f supabase/database/wf.sql
@@ -42,15 +40,14 @@ supabase db query --linked "select schemaname, tablename from pg_tables where sc
 
 - `supabase/config.toml` — project config; `api.schemas` includes `wf`
 - `supabase/database/wf.sql` — declarative schema for the `wf` schema
-- `flake.nix` — dev shell with Supabase CLI and git credential helper
-- `~/.pi/agent/skills/redacted-secrets/` — user-wide skill for safe secret handling
+- `flake.nix` — dev shell with Supabase CLI
 
 ## Testing API access
 
 When testing the Data API for `wf` tables, use the `Accept-Profile: wf` header:
 
 ```bash
-curl https://qfdrsttcqpnjwiypdvvx.supabase.co/rest/v1/workflows \
+curl https://<project-ref>.supabase.co/rest/v1/workflows \
   -H "apikey: <REDACTED>" \
   -H "Authorization: Bearer <REDACTED>" \
   -H "Accept-Profile: wf"
